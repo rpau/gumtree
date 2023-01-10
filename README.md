@@ -1,6 +1,6 @@
 # GumTree
 
-An awesome code differencing tool.
+An awesome code differencing tool updated by rpau
 
 ## Status
 
