@@ -23,21 +23,21 @@ You can easily integrate GumTree's container with Git by adding the following co
 
 ### Mac OS
 
-```
+```properties
 [difftool "gumtree-docker"]
-	cmd = docker run -v /private/$REMOTE:/diff/left -v /private/$LOCAL:/diff/right -p 4567:4567 gumtreediff/gumtree webdiff left/ right/
+	cmd = docker run -v /private/$LOCAL:/diff/left -v /private/$REMOTE:/diff/right -p 4567:4567 gumtreediff/gumtree webdiff left/ right/
 ```
 ### Linux - Windows
 
-```	
+```properties	
 [difftool "gumtree-docker"]
-	cmd = docker run -v $REMOTE:/diff/left -v $LOCAL:/diff/right -p 4567:4567 gumtreediff/gumtree webdiff left/ right/
+	cmd = docker run -v $LOCAL:/diff/left -v $REMOTE:/diff/right -p 4567:4567 gumtreediff/gumtree webdiff left/ right/
 ```
 ### Usage
 
 You can invoke GumTree's from git by running the command `git difftool -d --no-symlinks -t gumtree-docker`. We recommend putting an alias in the alias section of `$HOME/.gitconfig` such as:
 
-```
+```properties
 [alias]
 	gd = difftool -d --no-symlinks -t gumtree-docker
 ```

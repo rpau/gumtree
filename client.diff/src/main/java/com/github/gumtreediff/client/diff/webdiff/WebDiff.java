@@ -27,8 +27,7 @@ import com.github.gumtreediff.client.diff.AbstractDiffClient;
 import com.github.gumtreediff.utils.Registry;
 import com.github.gumtreediff.io.DirectoryComparator;
 import com.github.gumtreediff.utils.Pair;
-import org.rendersnake.HtmlCanvas;
-import org.rendersnake.Renderable;
+
 import spark.Spark;
 
 import java.io.File;
@@ -42,8 +41,8 @@ import static spark.Spark.*;
 @Register(description = "Web diff client", options = WebDiff.WebDiffOptions.class, priority = Registry.Priority.HIGH)
 public class WebDiff extends AbstractDiffClient<WebDiff.WebDiffOptions> {
     public static final String JQUERY_JS_URL = "https://code.jquery.com/jquery-3.4.1.min.js";
-    public static final String BOOTSTRAP_CSS_URL = "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css";
-    public static final String BOOTSTRAP_JS_URL = "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js";
+    public static final String BOOTSTRAP_CSS_URL = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css";
+    public static final String BOOTSTRAP_JS_URL = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js";
 
     public WebDiff(String[] args) {
         super(args);
@@ -95,40 +94,34 @@ public class WebDiff extends AbstractDiffClient<WebDiff.WebDiffOptions> {
             return "";
         });
         get("/list", (request, response) -> {
-            Renderable view = new DirectoryDiffView(comparator);
-            return render(view);
+            return DirectoryDiffView.build(comparator).renderFormatted();
         });
         get("/vanilla-diff/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(":id"));
             Pair<File, File> pair = comparator.getModifiedFiles().get(id);
             Diff diff = getDiff(pair.first.getAbsolutePath(), pair.second.getAbsolutePath());
-            Renderable view = new VanillaDiffView(pair.first, pair.second, diff, false);
-            return render(view);
+            return VanillaDiffView.build(pair.first, pair.second, diff, false).renderFormatted();
         });
         get("/monaco-diff/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(":id"));
             Pair<File, File> pair = comparator.getModifiedFiles().get(id);
             Diff diff = getDiff(pair.first.getAbsolutePath(), pair.second.getAbsolutePath());
-            Renderable view = new MonacoDiffView(pair.first, pair.second, diff, id);
-            return render(view);
+            return MonacoDiffView.build(pair.first, pair.second, diff, id).renderFormatted();
         });
         get("/monaco-native-diff/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(":id"));
             Pair<File, File> pair = comparator.getModifiedFiles().get(id);
-            Renderable view = new MonacoNativeDiffView(pair.first, pair.second, id);
-            return render(view);
+            return MonacoNativeDiffView.build(pair.first, pair.second, id).renderFormatted();
         });
         get("/mergely-diff/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(":id"));
-            Renderable view = new MergelyDiffView(id);
-            return render(view);
+            return MergelyDiffView.build(id).renderFormatted();
         });
         get("/raw-diff/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(":id"));
             Pair<File, File> pair = comparator.getModifiedFiles().get(id);
             Diff diff = getDiff(pair.first.getAbsolutePath(), pair.second.getAbsolutePath());
-            Renderable view = new TextDiffView(pair.first, pair.second, diff);
-            return render(view);
+            return TextDiffView.build(pair.first, pair.second, diff).renderFormatted();
         });
         get("/left/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(":id"));
@@ -144,12 +137,6 @@ public class WebDiff extends AbstractDiffClient<WebDiff.WebDiffOptions> {
             System.exit(0);
             return "";
         });
-    }
-
-    private static String render(Renderable r) throws IOException {
-        HtmlCanvas c = new HtmlCanvas();
-        r.renderOn(c);
-        return c.toHtml();
     }
 
     private static String readFile(String path, Charset encoding)  throws IOException {

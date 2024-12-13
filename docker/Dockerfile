@@ -9,7 +9,7 @@ RUN apt-get update \
 	    build-essential ocaml libnum-ocaml-dev python3-pip python3-dev nodejs npm \
 	    tzdata ca-certificates p11-kit
 
-RUN pip3 install pandas plotnine scipy
+RUN pip3 install pandas plotnine scipy jupyter
 
 # Set locale
 ENV LANG C.UTF-8
@@ -34,7 +34,7 @@ RUN git clone https://github.com/GumTreeDiff/jsparser.git /opt/jsparser --depth 
     && npm --prefix /opt/jsparser/ install /opt/jsparser/
 
 # Install tree-sitter-parser
-RUN git clone --recurse-submodules https://github.com/GumTreeDiff/tree-sitter-parser.git /opt/tree-sitter-parser --depth 1 \
+RUN git clone --recurse-submodules --shallow-submodules https://github.com/GumTreeDiff/tree-sitter-parser.git /opt/tree-sitter-parser --depth 1 \
     && ln -s /opt/tree-sitter-parser/tree-sitter-parser.py /usr/bin/tree-sitter-parser.py \
     && pip3 install tree_sitter pyyaml
 

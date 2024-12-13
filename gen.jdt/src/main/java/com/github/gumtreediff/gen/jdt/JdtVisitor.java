@@ -41,11 +41,12 @@ public class JdtVisitor  extends AbstractJdtVisitor {
     private static final Type ASSIGNMENT_OPERATOR = type("ASSIGNMENT_OPERATOR");
     private static final Type PREFIX_EXPRESSION_OPERATOR = type("PREFIX_EXPRESSION_OPERATOR");
     private static final Type POSTFIX_EXPRESSION_OPERATOR = type("POSTFIX_EXPRESSION_OPERATOR");
+    private static final Type TAG_NAME = type("TAG_NAME");
 
     private static final Type ARRAY_INITIALIZER = nodeAsSymbol(ASTNode.ARRAY_INITIALIZER);
     private static final Type SIMPLE_NAME = nodeAsSymbol(ASTNode.SIMPLE_NAME);
 
-    private IScanner scanner;
+    protected IScanner scanner;
 
     public JdtVisitor(IScanner scanner) {
         super();
@@ -62,6 +63,9 @@ public class JdtVisitor  extends AbstractJdtVisitor {
             push(i, METHOD_INVOCATION_RECEIVER, "", i.getExpression().getStartPosition(),
                     i.getExpression().getLength());
             i.getExpression().accept(this);
+            for (Object argument : i.typeArguments()) {
+                ((ASTNode) argument).accept(this);
+            }
             popNode();
         }
         pushNode(i.getName(), getLabel(i.getName()));
@@ -108,6 +112,10 @@ public class JdtVisitor  extends AbstractJdtVisitor {
 
     @Override
     public boolean visit(TagElement e) {
+        if (e.getTagName() != null && !e.getTagName().isEmpty()) {
+            push(e, TAG_NAME, e.getTagName(), e.getStartPosition(), e.getTagName().length());
+            popNode();
+        }
         return true;
     }
 
